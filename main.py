@@ -6,6 +6,7 @@ import docx
 
 CSV_PATH = "data"
 DOCX_PATH = "result"
+DELIMITER = "|"
 
 
 def allowed_file(filename: str, allowed_extensions: tuple[str, ...]) -> bool:
@@ -31,7 +32,7 @@ if __name__ == "__main__":
                 continue
 
             with open(CSV_PATH + "/" + file, newline="", encoding="utf-8") as f:
-                csv_reader = csv.reader(f, delimiter="|")
+                csv_reader = csv.reader(f, delimiter=DELIMITER)
 
                 csv_headers = next(csv_reader)
                 csv_cols = len(csv_headers)
