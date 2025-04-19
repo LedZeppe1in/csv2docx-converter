@@ -26,6 +26,7 @@ if __name__ == "__main__":
     if not os.path.exists(DOCX_PATH):
         os.makedirs(DOCX_PATH)
 
+    total_col_count, total_cell_count, total_empty_cell_count = 0, 0, 0
     for _, _, files in os.walk(CSV_PATH):
         for file in files:
             if not allowed_file(file, ("csv",)):
@@ -36,6 +37,7 @@ if __name__ == "__main__":
 
                 csv_headers = next(csv_reader)
                 csv_cols = len(csv_headers)
+                total_col_count += csv_cols
 
                 doc = docx.Document()
                 table = doc.add_table(rows=1, cols=csv_cols)
@@ -43,14 +45,26 @@ if __name__ == "__main__":
 
                 for i in range(csv_cols):
                     hdr_cells[i].text = csv_headers[i]
+                    if not hdr_cells[i].text:
+                        total_empty_cell_count += 1
 
+                row_count = 1
                 for row in csv_reader:
+                    row_count += 1
                     row_cells = table.add_row().cells
                     for i in range(csv_cols):
                         row_cells[i].text = row[i]
+                        if not row_cells[i].text:
+                            total_empty_cell_count += 1
+
+            total_cell_count += (row_count * csv_cols)
 
             doc.add_page_break()
             result_path = DOCX_PATH + "/" + os.path.splitext(file)[0] + ".docx"
             doc.save(result_path)
             print("Save DOCX files:")
             print(result_path)
+
+    print(f"Total cols = {total_col_count}")
+    print(f"Total cells = {total_cell_count}")
+    print(f"Total empty cells = {total_empty_cell_count}")
